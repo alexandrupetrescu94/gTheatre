@@ -86,7 +86,7 @@ public class MainActivity extends Activity
 							.title("You are here!")
 							.icon(BitmapDescriptorFactory.fromResource(userIcon))
 							.snippet("Your last recorded location"));
-		theMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng,13), 3000, null);
+		theMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng,20), 3000, null);
 	}
 	@Override
 	public void onDisconnected() {
