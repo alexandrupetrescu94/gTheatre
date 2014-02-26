@@ -60,7 +60,6 @@ public class MainActivity extends FragmentActivity
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
         		
         userIcon = R.drawable.yellow_point;
         blueIcon = R.drawable.blue_point;
@@ -126,6 +125,7 @@ public class MainActivity extends FragmentActivity
 	    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();		
 	}
 	
+	//Not actually needed,just for getting a location having coords
 	private class GetAddressTask extends AsyncTask<Location, Void, String>{
 		Context mContext;
 		public GetAddressTask(Context context)
@@ -162,12 +162,17 @@ public class MainActivity extends FragmentActivity
 	}
 	
 	public void getAddress(View v) {
+		//BUTTON ADDRESS AND PROGRESS BAR 
 		if ( Geocoder.isPresent() ){
+		mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
 		mActivityIndicator.setVisibility(View.VISIBLE);
-		Log.d("Message", "Button Clicked");
-			(new GetAddressTask(this)).execute(myLoc);
+		(new GetAddressTask(this)).execute(myLoc);
 		}	
 	}
+	//
+	
+	
+	
 	// TODO Starting setting if gMaps isn't enabled
 	// TODO newLatLngBounds instead of newLatLngZoom
 }
