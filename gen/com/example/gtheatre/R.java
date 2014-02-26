@@ -223,7 +223,9 @@ containing a value of this type.
         public static final int yellow_point=0x7f02001e;
     }
     public static final class id {
-        public static final int action_settings=0x7f050006;
+        public static final int action_settings=0x7f050008;
+        public static final int address_progress=0x7f050006;
+        public static final int get_address=0x7f050007;
         public static final int hybrid=0x7f050004;
         public static final int map=0x7f050005;
         public static final int none=0x7f050000;
@@ -337,6 +339,7 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
+        public static final int get_address=0x7f06001d;
         public static final int hello_world=0x7f06001c;
     }
     public static final class style {
