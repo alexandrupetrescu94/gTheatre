@@ -3,6 +3,8 @@ package com.example.gtheatre;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -11,28 +13,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.location.Location;
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.widget.Toast;
-import android.os.AsyncTask;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
  
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
- 
-public class MainActivity extends Activity 
+public class MainActivity extends FragmentActivity 
 				implements GooglePlayServicesClient.ConnectionCallbacks,
-				GooglePlayServicesClient.OnConnectionFailedListener {
+				GooglePlayServicesClient.OnConnectionFailedListener,
+				LocationListener{
 	
 	private int userIcon,blueIcon;
 	private GoogleMap theMap;
@@ -41,12 +31,22 @@ public class MainActivity extends Activity
 	private LocationClient myLocCl;
 	private LatLng	lastLatLng;
 	private double lat,lng;
-	private String placesSearchStr;
-
+	private  LocationRequest mLocationRequest;
+	
+    public static final int UPDATE_INTERVAL_IN_SECONDS = 60;
+    private static final long UPDATE_INTERVAL = 1000 * UPDATE_INTERVAL_IN_SECONDS;
+    private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
+    private static final long FASTEST_INTERVAL = 1000 * FASTEST_INTERVAL_IN_SECONDS;
+   
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         
         userIcon = R.drawable.yellow_point;
         blueIcon = R.drawable.blue_point;
@@ -58,7 +58,7 @@ public class MainActivity extends Activity
         
         if(theMap != null){
             //ok - proceed
-        	theMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        	theMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         	myLocCl = new LocationClient(getApplicationContext(),this,this);
         	// once we have the reference to the client, connect it
@@ -75,6 +75,7 @@ public class MainActivity extends Activity
 	@Override
 	public void onConnected(Bundle arg0) {
 		Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+		
 		myLoc = myLocCl.getLastLocation();
 		lat = myLoc.getLatitude();
 		lng = myLoc.getLongitude();
@@ -86,17 +87,29 @@ public class MainActivity extends Activity
 							.title("You are here!")
 							.icon(BitmapDescriptorFactory.fromResource(userIcon))
 							.snippet("Your last recorded location"));
-		theMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng,20), 3000, null);
+		theMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng,17), 3000, null);
+		
+		myLocCl.requestLocationUpdates(mLocationRequest, this);
 	}
+	
 	@Override
 	public void onDisconnected() {
-	
+        Toast.makeText(this, "Disconnected. Please re-connect.",
+                Toast.LENGTH_SHORT).show();
 	}
-		@Override
+	
+	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {	
 	}
-	// TODO GetFirstIfConnected / onDisconnected method
+	
+		@Override
+		public void onLocationChanged(Location location) {
+			String msg = "Updated Location: " +
+	                Double.toString(location.getLatitude()) + "," +
+	                Double.toString(location.getLongitude());
+	        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+			
+		}
+		
 	// TODO newLatLngBounds instead of newLatLngZoom
-	// TODO LocationRequest needed?
-	//http://www.codeproject.com/Articles/665527/A-GPS-Location-Plotting-Android-Application
 }
